@@ -14,6 +14,7 @@ import tempfile
 # Parse arguments
 parser = argparse.ArgumentParser(description="Rename files in directory with sequence number")
 parser.add_argument("-c", "--count", type=int, default=1, help="Initial count (Default: 1)")
+parser.add_argument("-e", "--extension", type=str, required=False, help="Overwrite extension with")
 parser.add_argument("-p", "--prefix", type=str, default="", required=False, help="Prefix")
 parser.add_argument("-s", "--suffix", type=str, default="", required=False, help="Suffix")
 parser.add_argument("-v", "--verbose", action="store_const", const="verbose", help="Verbose output")
@@ -24,6 +25,7 @@ arguments = parser.parse_args()
 
 # Get files in directory
 directory = arguments.directory
+extension = arguments.extension
 prefix = arguments.prefix
 suffix = arguments.suffix
 files = sorted([f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))], key=str)
@@ -49,7 +51,8 @@ if count:
         counter = arguments.count
         for f in files:
             basename = prefix + str(counter).zfill(padding) + suffix
-            extension = "" if -1 == f.find(".") else f.split(".", 1)[1]
+            if None == extension:
+                extension = "" if -1 == f.find(".") else f.split(".", 1)[1]
             filename = ".".join([basename, extension]) if extension else basename
 
             if verbose:
