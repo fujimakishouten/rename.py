@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(description="Rename files in directory with seq
 parser.add_argument("-c", "--count", type=int, default=1, help="Initial count (Default: 1)")
 parser.add_argument("-p", "--prefix", type=str, default="", required=False, help="Prefix")
 parser.add_argument("-s", "--suffix", type=str, default="", required=False, help="Suffix")
-parser.add_argument("-v", "--verbose", nargs="?", type=bool, default=False, required=False, help="Verbose (Default: False)")
+parser.add_argument("-v", "--verbose", action="store_const", const="verbose", help="Verbose output")
 parser.add_argument("-z", "--zfill", type=str, default="auto", help="Pad width (Default: auto)")
 parser.add_argument("directory", nargs="?", type=str, default=os.curdir, help="Working directory (Default: .)")
 arguments = parser.parse_args()
