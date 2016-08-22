@@ -52,8 +52,8 @@ if count:
         for f in files:
             basename = prefix + str(counter).zfill(padding) + suffix
             if None == extension:
-                extension = "" if -1 == f.find(".") else f.split(".", 1)[1]
-            filename = ".".join([basename, extension]) if extension else basename
+                ext = "" if -1 == f.find(".") else f.split(".", 1)[1]
+            filename = ".".join([basename, ext]) if ext else basename
 
             if verbose:
                 print("File renamed {0}/{1}".format(current, count), end=end)
