@@ -1,16 +1,20 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.7
 
 # vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4:
 
 
 
-import argparse
 import os
-import shutil
+import sys
 import tempfile
+import argparse
+import shutil
 
 
-def rename(directory, start, extension, prefix, suffix, verbose, zfill):
+def extname(name):
+    return "" if -1 == name.find(".") else name.split(".", 1)[1]
+
+def rename(directory, start, extension, prefix, suffix, verbose, zfill, dryrun):
     """Rename files in the directory."""
     # Get files in directory
     files = sorted([f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))], key=str)
@@ -18,6 +22,18 @@ def rename(directory, start, extension, prefix, suffix, verbose, zfill):
     count = len(files)
     padding = len(str(count)) if "auto" == zfill else int(zfill)
     end = "\033[K\r"
+
+    # Dry run
+    if dryrun:
+        print(os.path.abspath(directory).split("/")[-1])
+        for i, f in enumerate(files):
+            basename = prefix + str(start + i).zfill(padding) + suffix
+            ext = extname(f) if None == extension else extension
+            filename = ".".join([basename, ext]) if ext else basename
+
+            print("{0} => {1}".format(f, filename))
+        print()
+        sys.exit(0)
 
 
     # Rename files
@@ -28,7 +44,7 @@ def rename(directory, start, extension, prefix, suffix, verbose, zfill):
             current = 1
             for f in files:
                 if verbose:
-                    print("Move to temporary directory {0}/{1}".format(current, count), end=end)
+                    print('"{0}" Move to temporary directory {1}/{2}'.format(os.path.abspath(directory).split("/")[-1], current, count), end=end)
                 shutil.move(os.path.join(directory, f), os.path.join(temporary, f))
                 current = current + 1
 
@@ -36,25 +52,24 @@ def rename(directory, start, extension, prefix, suffix, verbose, zfill):
             counter = start
             for f in files:
                 basename = prefix + str(counter).zfill(padding) + suffix
-                ext = extension
-                if None == extension:
-                    ext = "" if -1 == f.find(".") else f.split(".", 1)[1]
+                ext = extname(f) if None == extension else extension
                 filename = ".".join([basename, ext]) if ext else basename
 
                 if verbose:
-                    print("File renamed {0}/{1}".format(current, count), end=end)
+                    print('"{0}" file renamed {1}/{2}'.format(os.path.abspath(directory).split("/")[-1], current, count), end=end)
                 shutil.move(os.path.join(temporary, f), os.path.join(directory, filename))
                 current = current + 1
                 counter = counter + 1
 
         if verbose:
-            print("{0}{1} files renamed".format(end, count))
+            print('"{0}" {1} files renamed'.format(os.path.abspath(directory).split("/")[-1], count))
 
 
 if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser(description="Rename files in directory with sequence number")
     parser.add_argument("-c", "--count", type=int, default=1, help="Initial count (Default: 1)")
+    parser.add_argument("-d", "--dryrun", type=bool, default=False, help="Dry run")
     parser.add_argument("-e", "--extension", type=str, required=False, help="Overwrite extension with")
     parser.add_argument("-p", "--prefix", type=str, default="", required=False, help="Prefix")
     parser.add_argument("-s", "--suffix", type=str, default="", required=False, help="Suffix")
@@ -71,9 +86,10 @@ if __name__ == "__main__":
     suffix = arguments.suffix
     verbose = False if False == arguments.verbose else True
     zfill = arguments.zfill
+    dryrun = arguments.dryrun
 
     # Execute rename
-    rename(directory, start, extension, prefix, suffix, verbose, zfill)
+    rename(directory, start, extension, prefix, suffix, verbose, zfill, dryrun)
 
 
 
