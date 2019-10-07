@@ -62,6 +62,7 @@ def rename(directory, start, extension, prefix, suffix, verbose, zfill, dryrun):
                 counter = counter + 1
 
         if verbose:
+            print("", end=end)
             print('"{0}" {1} files renamed'.format(os.path.abspath(directory).split("/")[-1], count))
 
 
