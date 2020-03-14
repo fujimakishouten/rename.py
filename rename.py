@@ -70,7 +70,7 @@ if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser(description="Rename files in directory with sequence number")
     parser.add_argument("-c", "--count", type=int, default=1, help="Initial count (Default: 1)")
-    parser.add_argument("-d", "--dryrun", type=bool, default=False, help="Dry run")
+    parser.add_argument("-d", "--dryrun", action="store_true", help="Dry run")
     parser.add_argument("-e", "--extension", type=str, required=False, help="Overwrite extension with")
     parser.add_argument("-p", "--prefix", type=str, default="", required=False, help="Prefix")
     parser.add_argument("-s", "--suffix", type=str, default="", required=False, help="Suffix")
